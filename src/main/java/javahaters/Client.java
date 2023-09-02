@@ -11,25 +11,35 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Scanner;
 
-public class TimeClient {
+public class Client {
+
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
         // Variable que recibirá la hora del servidor
-        String time = null;
+        Float result = null;
+
+        System.out.println("Introduce el primer valor: ");
+        Float value1 = Float.parseFloat(scanner.nextLine());
+        System.out.println("Introduce el segundo valor: ");
+        Float value2 = Float.parseFloat(scanner.nextLine());
+        System.out.println("Introduce el número de operación: ");
+        String operation = scanner.nextLine();
 
         try {
 
             // conectarse al servidor y cargar registro de objetos RMI
-            Registry registry = LocateRegistry.getRegistry("10.195.40.82", 1099);
+            Registry registry = LocateRegistry.getRegistry(Constants.IP, 8080);
 
             // buscar el objeto timeServer en el registro,
             // y si lo encuentra, crear el objeto local
-            TimeServer TS = (TimeServer)registry.lookup("timeServer");
+            MainServer MS = (MainServer)registry.lookup("MainServer");
 
             // usar el método getTime del objeto conectado.
-            time = TS.getTime();
+            result = MS.requestOperation(value1, value2, operation);
 
         }
         catch (NotBoundException e) {
@@ -41,7 +51,7 @@ public class TimeClient {
             System.exit(0);
         }
 
-        if (time != null) System.out.println("La hora es: " + time);
+        if (result != null) System.out.println("El resultado es: " + result);
 
     }
 
